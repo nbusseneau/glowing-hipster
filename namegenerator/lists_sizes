@@ -1,2 +1,7 @@
-adjectives,4
-nouns,4
+github.repo.adjectives,4
+github.repo.nouns,4
+roman.female.cognomen,1021
+roman.female.nomen,125
+roman.male.cognomen,1021
+roman.male.nomen,347
+roman.male.praenomen,54
