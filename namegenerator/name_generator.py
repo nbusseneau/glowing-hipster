@@ -7,7 +7,7 @@ import linecache
 import random
 
 LISTS_DIR = normpath(join(dirname(__file__), 'lists'))
-LISTS_SIZES = normpath(join(dirname(__file__), 'lists_sizes'))
+LISTS_SIZES_FILE = normpath(join(dirname(__file__), 'lists_sizes'))
 FILES = {}
 for filename in listdir(LISTS_DIR):
     FILES[filename] = normpath(join(LISTS_DIR, filename))
@@ -18,32 +18,25 @@ THEMES = {
     'roman.female': [' ', ('roman.female.nomen', 'roman.female.cognomen')],
 }
 
+lists_sizes = {}
+with open(LISTS_SIZES_FILE) as f:
+    for line in f:
+        filename, count = line.strip().split(',')
+        lists_sizes[filename] = int(count)
+
 
 def update_lists_sizes():
-    """Update lists_sizes CSV file
+    """Update LISTS_SIZES_FILE CSV file and lists_sizes global variable
 
-    For each list file in lists directory, count lines and add to lists_sizes
+    For each list file in lists directory, count lines, write to LISTS_SIZES_FILE
+    and update lists_sizes[file]
     """
-    with open(LISTS_SIZES, 'wb') as lists_sizes:
+    with open(LISTS_SIZES_FILE, 'wb') as lists_sizes_file:
         for filename, file_path in sorted(FILES.iteritems()):
             with open(file_path) as f:
                 count = len(f.readlines())
-                lists_sizes.write('{},{}\n'.format(filename, count))
-
-
-def read_lists_sizes():
-    """Read lists_size CSV file and return a dict{filename: count}
-
-    :return: dictionary of line counts for each list file
-    :rtype: dict{filename: count}
-    """
-    lists_sizes = {}
-    with open(LISTS_SIZES) as f:
-        for line in f:
-            filename, count = line.strip().split(',')
-            lists_sizes[filename] = int(count)
-
-    return lists_sizes
+                lists_sizes_file.write('{},{}\n'.format(filename, count))
+                lists_sizes[filename] = int(count)
 
 
 def get_name(sep, *args):
@@ -56,11 +49,14 @@ def get_name(sep, *args):
     :return: a randomly generated name
     :rtype: string
     """
-    lists_sizes = read_lists_sizes()
     name = []
     for filename in args:
-        line_no = random.randrange(1, lists_sizes[filename] + 1)
-        name.append(linecache.getline(FILES[filename], line_no).strip())
+        try:
+            line_no = random.randrange(1, lists_sizes[filename] + 1)
+        except KeyError as e:
+            print 'List {} does not exist'.format(e)
+        else:
+            name.append(linecache.getline(FILES[filename], line_no).strip())
     return sep.join(name)
 
 
@@ -72,10 +68,13 @@ def name_generator(theme='github.repo'):
     :return: a randomly generated name
     :rtype: string
     """
-    sep, args = THEMES[theme]
-    return get_name(sep, *args)
+    try:
+        sep, args = THEMES[theme]
+    except KeyError as e:
+        print 'Theme {} does not exist.'.format(e)
+    else:
+        return get_name(sep, *args)
 
 
 if __name__ == '__main__':
-    update_lists_sizes()
-    print name_generator('roman.male')
+    print name_generator('roman.female')
