@@ -14,7 +14,7 @@ for filename in listdir(LISTS_DIR):
 
 
 def update_lists_sizes():
-    """Update lists_size CSV file
+    """Update lists_sizes CSV file
 
     For each list file in lists directory, count lines and add to lists_sizes
     """
@@ -26,7 +26,11 @@ def update_lists_sizes():
 
 
 def read_lists_sizes():
-    """Read lists_size CSV file and return a dict{filename: count}"""
+    """Read lists_size CSV file and return a dict{filename: count}
+
+    :return: dictionary of line counts for each list file
+    :rtype: dict{filename: count}
+    """
     lists_sizes = {}
     with open(LISTS_SIZES) as f:
         for line in f:
@@ -36,15 +40,23 @@ def read_lists_sizes():
     return lists_sizes
 
 
-def get_name(sep='-'):
-    """Generate and return a random name"""
+def get_name(sep, *args):
+    """Generate and return a random name based on given lists
+
+    :keyword sep: name separator (e.g. between first and family names)
+    :type sep: char
+    :param args: list files to use for the generation (order matters)
+    :type args: list of strings
+    :return: a randomly generated name
+    :rtype: string
+    """
     lists_sizes = read_lists_sizes()
-    line_no = random.randrange(1, lists_sizes['adjectives'] + 1)
-    adjective = linecache.getline(FILES['adjectives'], line_no).strip()
-    line_no = random.randrange(1, lists_sizes['nouns'] + 1)
-    noun = linecache.getline(FILES['nouns'], line_no).strip()
-    return sep.join([adjective, noun])
+    name = []
+    for filename in args:
+        line_no = random.randrange(1, lists_sizes[filename] + 1)
+        name.append(linecache.getline(FILES[filename], line_no).strip())
+    return sep.join(name)
 
 
 if __name__ == '__main__':
-    print get_name()
+    print get_name('-', 'adjectives', 'nouns')

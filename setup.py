@@ -8,7 +8,7 @@ def readme():
 
 setup(
     name="namegenerator",
-    description="Random name generator inspired by GitHub repository name suggestions.",
+    description="Random name generator inspired by GitHub repository name suggestions",
     url="https://github.com/Skymirrh/glowing-hipster",
     version="0.1",
     author="Skymirrh",
