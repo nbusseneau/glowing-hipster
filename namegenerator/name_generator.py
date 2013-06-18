@@ -47,7 +47,7 @@ def get_name(sep, *args):
     :param args: list files to use for the generation (order matters)
     :type args: list of strings
     :return: a randomly generated name
-    :rtype: string
+    :rtype: string (or None if no valid files are given as args)
     """
     name = []
     for filename in args:
@@ -66,7 +66,7 @@ def name_generator(theme='github.repo'):
     :arg theme: chosen theme for the name generation
     :type theme: string
     :return: a randomly generated name
-    :rtype: string
+    :rtype: string (or None if theme does not exist)
     """
     try:
         sep, args = THEMES[theme]
@@ -77,4 +77,5 @@ def name_generator(theme='github.repo'):
 
 
 if __name__ == '__main__':
-    print name_generator('roman.female')
+    update_lists_sizes()
+    print name_generator()
